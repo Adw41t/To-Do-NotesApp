@@ -86,7 +86,7 @@ class TasksFragment : Fragment() {
                 true
             }
             R.id.menu_refresh -> {
-                viewModel.loadTasks(true)
+                viewModel.loadTasks()
                 true
             }
             else -> false

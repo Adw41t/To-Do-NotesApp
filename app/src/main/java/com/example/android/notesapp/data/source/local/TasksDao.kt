@@ -112,9 +112,6 @@ interface TasksDao {
     @Query("UPDATE tasks SET pinned = :pinned WHERE entryid = :taskId")
     suspend fun pinTask(taskId: String, pinned: Boolean)
 
-//    @Query("SELECT * FROM Tasks where title like :string")
-//    fun searchTasksOrderByPinned(string: String): LiveData<List<Task>>
-
 
     @Query("SELECT * FROM Tasks where accountId = :accountId AND ( title like :string OR description like :string )order by pinned desc")
     fun searchTasksOrderByPinned(string: String, accountId: String): LiveData<List<Task>>

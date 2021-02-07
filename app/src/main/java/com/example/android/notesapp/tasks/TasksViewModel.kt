@@ -55,18 +55,6 @@ class TasksViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _forceUpdate = MutableLiveData<Boolean>(false)
 
-    private val _items: LiveData<List<Task>> = _forceUpdate.switchMap { forceUpdate ->
-        if (forceUpdate) {
-            _dataLoading.value = true
-            viewModelScope.launch {
-                tasksRepository.refreshTasks()
-                _dataLoading.value = false
-            }
-        }
-        tasksRepository.observeTasks(accountId.value!!).switchMap { filterTasks(it) }
-
-    }
-
     val items: LiveData<List<Task>> = listAllTasks
 
     private val _dataLoading = MutableLiveData<Boolean>()
@@ -109,7 +97,7 @@ class TasksViewModel(application: Application) : AndroidViewModel(application) {
     init {
         // Set initial state
         setFiltering(TasksFilterType.ALL_TASKS)
-        loadTasks(true)
+        loadTasks()
     }
 
     /**
@@ -144,7 +132,7 @@ class TasksViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
         // Refresh list
-        loadTasks(false)
+        loadTasks()
     }
 
     private fun setFilter(
@@ -232,8 +220,7 @@ class TasksViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * @param forceUpdate   Pass in true to refresh the data in the [TasksDataSource]
      */
-    fun loadTasks(forceUpdate: Boolean) {
-//        _forceUpdate.value = forceUpdate
+    fun loadTasks() {
         searchQuery.value=""
     }
 
@@ -255,7 +242,7 @@ class TasksViewModel(application: Application) : AndroidViewModel(application) {
         }
 
     fun refresh() {
-        _forceUpdate.value = true
+        searchQuery.value=""
     }
     fun search(string: String,accountId:String): LiveData<List<Task>> {
         return tasksRepository.searchTask(string,accountId).switchMap { filterTasks(it) }
