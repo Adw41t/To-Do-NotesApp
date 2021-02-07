@@ -16,9 +16,11 @@
 package com.example.android.architecture.blueprints.todoapp.tasks
 
 import android.graphics.Paint
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.data.Task
 
 
@@ -39,5 +41,13 @@ fun setStyle(textView: TextView, enabled: Boolean) {
         textView.paintFlags = textView.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
     } else {
         textView.paintFlags = textView.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+    }
+}
+@BindingAdapter("app:pinnedTask")
+fun setPin(imageButton: ImageButton, enabled: Boolean) {
+    if (enabled) {
+        imageButton.setImageResource(R.drawable.unpin)
+    } else {
+        imageButton.setImageResource(R.drawable.baseline_push_pin_black_18dp)
     }
 }

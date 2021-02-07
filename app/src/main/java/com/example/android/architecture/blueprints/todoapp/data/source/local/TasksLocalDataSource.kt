@@ -106,4 +106,18 @@ class TasksLocalDataSource internal constructor(
     override suspend fun deleteTask(taskId: String) = withContext<Unit>(ioDispatcher) {
         tasksDao.deleteTaskById(taskId)
     }
+
+    override suspend fun pinTask(task: Task) = withContext(ioDispatcher) {
+        tasksDao.pinTask(task.id, true)
+    }
+
+    override suspend fun unPinTask(task: Task) = withContext(ioDispatcher) {
+        tasksDao.pinTask(task.id, false)
+    }
+
+    override fun searchTasks(string: String): LiveData<Result<List<Task>>> {
+        return tasksDao.searchTasksOrderByPinned(string).map {
+            Success(it)
+        }
+    }
 }

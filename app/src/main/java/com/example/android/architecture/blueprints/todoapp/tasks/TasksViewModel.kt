@@ -28,13 +28,28 @@ import com.example.android.architecture.blueprints.todoapp.data.source.DefaultTa
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource
 import kotlinx.coroutines.launch
 
+
 /**
  * ViewModel for the task list screen.
  */
 class TasksViewModel(application: Application) : AndroidViewModel(application) {
 
-    // Note, for testing and architecture purposes, it's bad practice to construct the repository
-    // here. We'll show you how to fix this during the codelab
+    var searchQuery = MutableLiveData<String>()
+    val listAllTasks: LiveData<List<Task>> = Transformations.switchMap<String, List<Task>>(searchQuery) { outputLive: String? ->
+        if (outputLive == null || outputLive == "" || outputLive.equals("%%")) {
+            //check if the current value is empty load all data else search
+            _dataLoading.value = true
+            return@switchMap tasksRepository.observeTasks().switchMap {
+                _dataLoading.value=false
+                filterTasks(it)
+            }
+        } else {
+            return@switchMap tasksRepository.searchTask(outputLive).switchMap {
+                _dataLoading.value=false
+                filterTasks(it)
+            }
+        }
+    }
     private val tasksRepository = DefaultTasksRepository.getRepository(application)
 
     private val _forceUpdate = MutableLiveData<Boolean>(false)
@@ -51,7 +66,7 @@ class TasksViewModel(application: Application) : AndroidViewModel(application) {
 
     }
 
-    val items: LiveData<List<Task>> = _items
+    val items: LiveData<List<Task>> = listAllTasks
 
     private val _dataLoading = MutableLiveData<Boolean>()
     val dataLoading: LiveData<Boolean> = _dataLoading
@@ -85,7 +100,8 @@ class TasksViewModel(application: Application) : AndroidViewModel(application) {
     private var resultMessageShown: Boolean = false
 
     // This LiveData depends on another so we can use a transformation.
-    val empty: LiveData<Boolean> = Transformations.map(_items) {
+//    val empty: LiveData<Boolean> = Transformations.map(_items) {
+    val empty: LiveData<Boolean> = Transformations.map(listAllTasks) {
         it.isEmpty()
     }
 
@@ -157,6 +173,15 @@ class TasksViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun pinTask(task: Task) = viewModelScope.launch {
+        val completed = task.isPinned
+        if (completed) {
+            tasksRepository.unPinTask(task)
+        } else {
+            tasksRepository.pinTask(task)
+        }
+    }
+
     /**
      * Called by the Data Binding library and the FAB's click listener.
      */
@@ -207,7 +232,8 @@ class TasksViewModel(application: Application) : AndroidViewModel(application) {
      * @param forceUpdate   Pass in true to refresh the data in the [TasksDataSource]
      */
     fun loadTasks(forceUpdate: Boolean) {
-        _forceUpdate.value = forceUpdate
+//        _forceUpdate.value = forceUpdate
+        searchQuery.value=""
     }
 
     private fun filterItems(tasks: List<Task>, filteringType: TasksFilterType): List<Task> {
@@ -229,5 +255,8 @@ class TasksViewModel(application: Application) : AndroidViewModel(application) {
 
     fun refresh() {
         _forceUpdate.value = true
+    }
+    fun search(string: String): LiveData<List<Task>> {
+        return tasksRepository.searchTask(string).switchMap { filterTasks(it) }
     }
 }

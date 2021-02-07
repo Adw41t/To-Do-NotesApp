@@ -24,11 +24,7 @@ import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.local.TasksLocalDataSource
 import com.example.android.architecture.blueprints.todoapp.data.source.local.ToDoDatabase
 import com.example.android.architecture.blueprints.todoapp.data.source.remote.TasksRemoteDataSource
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
 /**
  * Concrete implementation to load tasks from the data sources into a cache.
@@ -182,5 +178,21 @@ class DefaultTasksRepository private constructor(application: Application) {
 
     private suspend fun getTaskWithId(id: String): Result<Task> {
         return tasksLocalDataSource.getTask(id)
+    }
+
+    suspend fun pinTask(task: Task) {
+        coroutineScope {
+            launch { tasksRemoteDataSource.pinTask(task) }
+            launch { tasksLocalDataSource.pinTask(task) }
+        }
+    }
+    suspend fun unPinTask(task: Task) {
+        coroutineScope {
+            launch { tasksRemoteDataSource.unPinTask(task) }
+            launch { tasksLocalDataSource.unPinTask(task) }
+        }
+    }
+    fun searchTask(string: String) : LiveData<Result<List<Task>>>{
+      return tasksLocalDataSource.searchTasks(string)
     }
 }

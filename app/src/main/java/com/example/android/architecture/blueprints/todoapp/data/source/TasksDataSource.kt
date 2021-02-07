@@ -52,4 +52,10 @@ interface TasksDataSource {
     suspend fun deleteAllTasks()
 
     suspend fun deleteTask(taskId: String)
+
+    suspend fun pinTask(task: Task)
+
+    suspend fun unPinTask(task: Task)
+
+    fun searchTasks(string: String): LiveData<Result<List<Task>>>
 }

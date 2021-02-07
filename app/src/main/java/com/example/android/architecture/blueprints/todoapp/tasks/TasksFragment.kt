@@ -16,13 +16,12 @@
 
 package com.example.android.architecture.blueprints.todoapp.tasks
 
+import android.app.SearchManager
+import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.SearchView
+import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -50,6 +49,7 @@ class TasksFragment : Fragment() {
     private lateinit var viewDataBinding: TasksFragBinding
 
     private lateinit var listAdapter: TasksAdapter
+    private lateinit var listAdapterNew: TasksAdapterNew
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -81,6 +81,31 @@ class TasksFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.tasks_fragment_menu, menu)
+        // Associate searchable configuration with the SearchView
+        val searchManager = activity!!.getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        (menu.findItem(R.id.search).actionView as SearchView).apply {
+            setSearchableInfo(searchManager.getSearchableInfo(activity!!.componentName))
+        }
+        val item = menu.findItem(R.id.search)
+//        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW or MenuItem.SHOW_AS_ACTION_IF_ROOM)
+
+        val searchView = item.actionView as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                Toast.makeText(context,query,Toast.LENGTH_SHORT).show()
+//                viewModel.search(query).observe(viewLifecycleOwner,{
+//                    listAdapterNew.updateList(it)
+//                })
+                viewModel.searchQuery.setValue("%" + query + "%");
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+//                Toast.makeText(context,newText,Toast.LENGTH_SHORT).show()
+                viewModel.searchQuery.setValue("%" + newText + "%");
+                return false
+            }
+        })
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -157,6 +182,11 @@ class TasksFragment : Fragment() {
         if (viewModel != null) {
             listAdapter = TasksAdapter(viewModel)
             viewDataBinding.tasksList.adapter = listAdapter
+//            viewModel.listAllTasks.observe(viewLifecycleOwner,{ list->
+//
+//                listAdapterNew =TasksAdapterNew(list, context!!)
+//                viewDataBinding.tasksList.adapter = listAdapterNew
+//            })
         } else {
             Timber.w("ViewModel not initialized when attempting to set up adapter.")
         }

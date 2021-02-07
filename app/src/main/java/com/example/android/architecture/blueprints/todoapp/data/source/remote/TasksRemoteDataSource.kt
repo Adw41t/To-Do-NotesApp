@@ -93,7 +93,7 @@ object TasksRemoteDataSource : TasksDataSource {
     }
 
     override suspend fun completeTask(task: Task) {
-        val completedTask = Task(task.title, task.description, true, task.id)
+        val completedTask = Task(task.title, task.description, true, task.isPinned, task.id)
         TASKS_SERVICE_DATA[task.id] = completedTask
     }
 
@@ -102,7 +102,7 @@ object TasksRemoteDataSource : TasksDataSource {
     }
 
     override suspend fun activateTask(task: Task) {
-        val activeTask = Task(task.title, task.description, false, task.id)
+        val activeTask = Task(task.title, task.description, false, task.isPinned, task.id)
         TASKS_SERVICE_DATA[task.id] = activeTask
     }
 
@@ -122,5 +122,20 @@ object TasksRemoteDataSource : TasksDataSource {
 
     override suspend fun deleteTask(taskId: String) {
         TASKS_SERVICE_DATA.remove(taskId)
+    }
+
+    override suspend fun pinTask(task: Task) {
+        val completedTask = Task(task.title, task.description, task.isCompleted,true, task.id)
+        TASKS_SERVICE_DATA[task.id] = completedTask
+
+    }
+    override suspend fun unPinTask(task: Task) {
+        val completedTask = Task(task.title, task.description, task.isCompleted,false, task.id)
+        TASKS_SERVICE_DATA[task.id] = completedTask
+
+    }
+
+    override fun searchTasks(string: String): LiveData<Result<List<Task>>> {
+        return observableTasks
     }
 }

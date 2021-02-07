@@ -25,5 +25,7 @@
     <dimen name="header_height">192dp</dimen>
     <dimen name="header_padding">16dp</dimen>
     <dimen name="header_image_width">100dp</dimen>
+    <dimen name="pin_image_width">36dp</dimen>
+    <dimen name="pin_image_height">36dp</dimen>
 
 </resources>

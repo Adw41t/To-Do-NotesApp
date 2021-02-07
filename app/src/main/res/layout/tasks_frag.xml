@@ -65,8 +65,8 @@
                         android:layout_marginRight="@dimen/list_item_padding"
                         android:layout_marginBottom="@dimen/activity_vertical_margin"
                         android:gravity="center_vertical"
-                        android:text="@{context.getString(viewmodel.currentFilteringLabel)}"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                        android:text="@{context.getString(viewmodel.currentFilteringLabel)}"/>
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/tasks_list"
