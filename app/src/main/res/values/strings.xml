@@ -15,7 +15,7 @@
   -->
 
 <resources>
-    <string name="app_name">Todo</string>
+    <string name="app_name">NotesApp</string>
     <string name="add_task">New Task</string>
     <string name="edit_task">Edit Task</string>
     <string name="task_marked_complete">Task marked complete</string>
@@ -40,11 +40,6 @@
     <string name="no_data">No data</string>
     <string name="loading">LOADING</string>
 
-    <string-array name="list_tasks_array">
-        <item>@string/nav_all</item>
-        <item>@string/nav_active</item>
-        <item>@string/nav_completed</item>
-    </string-array>
     <string name="nav_all">All</string>
     <string name="nav_active">Active</string>
     <string name="nav_completed">Completed</string>
@@ -62,5 +57,7 @@
     <!-- Content Descriptions -->
     <string name="tasks_header_image_content_description">Tasks header image</string>
     <string name="no_tasks_image_content_description">No tasks image</string>
+    <string name="user_id">Userid</string>
+    <string name="signout">Sign Out</string>
 
 </resources>

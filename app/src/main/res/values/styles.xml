@@ -37,4 +37,8 @@
     </style>
 
     <style name="Toolbar" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="NoActionBar" parent="Base.AppTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
 </resources>

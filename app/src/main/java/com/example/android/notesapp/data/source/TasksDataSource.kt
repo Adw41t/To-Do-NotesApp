@@ -25,7 +25,7 @@ import com.example.android.notesapp.data.Task
 interface TasksDataSource {
 
 
-    fun observeTasks(): LiveData<Result<List<Task>>>
+    fun observeTasks(accountId:String): LiveData<Result<List<Task>>>
 
     suspend fun getTasks(): Result<List<Task>>
 
@@ -57,5 +57,5 @@ interface TasksDataSource {
 
     suspend fun unPinTask(task: Task)
 
-    fun searchTasks(string: String): LiveData<Result<List<Task>>>
+    fun searchTasks(string: String,accountId:String): LiveData<Result<List<Task>>>
 }

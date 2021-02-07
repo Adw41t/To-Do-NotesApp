@@ -34,8 +34,8 @@ class TasksLocalDataSource internal constructor(
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : TasksDataSource {
 
-    override fun observeTasks(): LiveData<Result<List<Task>>> {
-        return tasksDao.observeTasks().map {
+    override fun observeTasks(accountId:String): LiveData<Result<List<Task>>> {
+        return tasksDao.observeTasks(accountId).map {
             Success(it)
         }
     }
@@ -115,8 +115,8 @@ class TasksLocalDataSource internal constructor(
         tasksDao.pinTask(task.id, false)
     }
 
-    override fun searchTasks(string: String): LiveData<Result<List<Task>>> {
-        return tasksDao.searchTasksOrderByPinned(string).map {
+    override fun searchTasks(string: String,accountId:String): LiveData<Result<List<Task>>> {
+        return tasksDao.searchTasksOrderByPinned(string,accountId).map {
             Success(it)
         }
     }

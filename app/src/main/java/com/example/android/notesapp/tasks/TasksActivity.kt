@@ -39,15 +39,16 @@ class TasksActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tasks_act)
-        setupNavigationDrawer()
+//        setupNavigationDrawer()
         setSupportActionBar(findViewById(R.id.toolbar))
 
         val navController: NavController = findNavController(R.id.nav_host_fragment)
-        appBarConfiguration =
-            AppBarConfiguration.Builder(R.id.tasks_fragment_dest, R.id.statistics_fragment_dest)
-                .setDrawerLayout(drawerLayout)
-                .build()
-        setupActionBarWithNavController(navController, appBarConfiguration)
+//        appBarConfiguration =
+//            AppBarConfiguration.Builder(R.id.tasks_fragment_dest, R.id.statistics_fragment_dest)
+//                .setDrawerLayout(drawerLayout)
+//                .build()
+//        setupActionBarWithNavController(navController, appBarConfiguration)
+        setupActionBarWithNavController(navController)
         findViewById<NavigationView>(R.id.nav_view)
             .setupWithNavController(navController)
     }

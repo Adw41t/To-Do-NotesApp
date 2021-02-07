@@ -16,6 +16,7 @@
 package com.example.android.notesapp.addedittask
 
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -49,6 +50,10 @@ class AddEditTaskFragment : Fragment() {
         val root = inflater.inflate(R.layout.addtask_frag, container, false)
         viewDataBinding = AddtaskFragBinding.bind(root).apply {
             this.viewmodel = viewModel
+        }
+        val viewModel = viewDataBinding.viewmodel
+        if (viewModel != null) {
+            viewModel.taskaccountID.value = PreferenceManager.getDefaultSharedPreferences(context).getString(getString(R.string.user_id), "admin")
         }
         // Set the lifecycle owner to the lifecycle of the view
         viewDataBinding.lifecycleOwner = this.viewLifecycleOwner

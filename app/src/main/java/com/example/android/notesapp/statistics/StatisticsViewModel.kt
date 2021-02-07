@@ -34,7 +34,7 @@ class StatisticsViewModel(application: Application) : AndroidViewModel(applicati
     // here. We'll show you how to fix this during the codelab
     private val tasksRepository = DefaultTasksRepository.getRepository(application)
 
-    private val tasks: LiveData<Result<List<Task>>> = tasksRepository.observeTasks()
+    private val tasks: LiveData<Result<List<Task>>> = tasksRepository.observeTasks("admin")
     private val _dataLoading = MutableLiveData<Boolean>(false)
     private val stats: LiveData<StatsResult?> = tasks.map {
         if (it is Success) {

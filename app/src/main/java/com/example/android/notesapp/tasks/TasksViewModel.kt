@@ -34,17 +34,18 @@ import kotlinx.coroutines.launch
  */
 class TasksViewModel(application: Application) : AndroidViewModel(application) {
 
+    var accountId = MutableLiveData<String>()
     var searchQuery = MutableLiveData<String>()
     val listAllTasks: LiveData<List<Task>> = Transformations.switchMap<String, List<Task>>(searchQuery) { outputLive: String? ->
         if (outputLive == null || outputLive == "" || outputLive.equals("%%")) {
             //check if the current value is empty load all data else search
             _dataLoading.value = true
-            return@switchMap tasksRepository.observeTasks().switchMap {
+            return@switchMap tasksRepository.observeTasks(accountId.value!!).switchMap {
                 _dataLoading.value=false
                 filterTasks(it)
             }
         } else {
-            return@switchMap tasksRepository.searchTask(outputLive).switchMap {
+            return@switchMap tasksRepository.searchTask(outputLive,accountId.value!!).switchMap {
                 _dataLoading.value=false
                 filterTasks(it)
             }
@@ -62,7 +63,7 @@ class TasksViewModel(application: Application) : AndroidViewModel(application) {
                 _dataLoading.value = false
             }
         }
-        tasksRepository.observeTasks().switchMap { filterTasks(it) }
+        tasksRepository.observeTasks(accountId.value!!).switchMap { filterTasks(it) }
 
     }
 
@@ -256,7 +257,7 @@ class TasksViewModel(application: Application) : AndroidViewModel(application) {
     fun refresh() {
         _forceUpdate.value = true
     }
-    fun search(string: String): LiveData<List<Task>> {
-        return tasksRepository.searchTask(string).switchMap { filterTasks(it) }
+    fun search(string: String,accountId:String): LiveData<List<Task>> {
+        return tasksRepository.searchTask(string,accountId).switchMap { filterTasks(it) }
     }
 }

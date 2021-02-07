@@ -49,7 +49,7 @@ object TasksRemoteDataSource : TasksDataSource {
         refreshTasks()
     }
 
-    override fun observeTasks(): LiveData<Result<List<Task>>> {
+    override fun observeTasks(accountId:String): LiveData<Result<List<Task>>> {
         return observableTasks
     }
 
@@ -135,7 +135,7 @@ object TasksRemoteDataSource : TasksDataSource {
 
     }
 
-    override fun searchTasks(string: String): LiveData<Result<List<Task>>> {
+    override fun searchTasks(string: String,accountId:String): LiveData<Result<List<Task>>> {
         return observableTasks
     }
 }

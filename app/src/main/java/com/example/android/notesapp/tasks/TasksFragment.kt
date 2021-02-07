@@ -19,10 +19,10 @@ package com.example.android.notesapp.tasks
 import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.view.*
 import android.widget.SearchView
 import android.widget.Toast
-import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -33,9 +33,13 @@ import com.example.android.notesapp.data.Task
 import com.example.android.notesapp.databinding.TasksFragBinding
 import com.example.android.notesapp.util.setupRefreshLayout
 import com.example.android.notesapp.util.setupSnackbar
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import timber.log.Timber
+
 
 /**
  * Display a grid of [Task]s. User can choose to view all, active or completed tasks.
@@ -49,8 +53,8 @@ class TasksFragment : Fragment() {
     private lateinit var viewDataBinding: TasksFragBinding
 
     private lateinit var listAdapter: TasksAdapter
-    private lateinit var listAdapterNew: TasksAdapterNew
 
+    private lateinit var mGoogleSignInClient: GoogleSignInClient
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -58,6 +62,15 @@ class TasksFragment : Fragment() {
         viewDataBinding = TasksFragBinding.inflate(inflater, container, false).apply {
             viewmodel = viewModel
         }
+        val viewModel = viewDataBinding.viewmodel
+        if (viewModel != null) {
+            viewModel.accountId.value = PreferenceManager.getDefaultSharedPreferences(context).getString(getString(R.string.user_id), "admin")
+        }
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build()
+        // Build a GoogleSignInClient with the options specified by gso.
+        mGoogleSignInClient = GoogleSignIn.getClient(context!!, gso)
         setHasOptionsMenu(true)
         return viewDataBinding.root
     }
@@ -68,8 +81,8 @@ class TasksFragment : Fragment() {
                 viewModel.clearCompletedTasks()
                 true
             }
-            R.id.menu_filter -> {
-                showFilteringPopUpMenu()
+            R.id.menu_signout -> {
+                signOut()
                 true
             }
             R.id.menu_refresh -> {
@@ -87,21 +100,16 @@ class TasksFragment : Fragment() {
             setSearchableInfo(searchManager.getSearchableInfo(activity!!.componentName))
         }
         val item = menu.findItem(R.id.search)
-//        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW or MenuItem.SHOW_AS_ACTION_IF_ROOM)
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW or MenuItem.SHOW_AS_ACTION_IF_ROOM)
 
         val searchView = item.actionView as SearchView
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                Toast.makeText(context,query,Toast.LENGTH_SHORT).show()
-//                viewModel.search(query).observe(viewLifecycleOwner,{
-//                    listAdapterNew.updateList(it)
-//                })
                 viewModel.searchQuery.setValue("%" + query + "%");
                 return false
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-//                Toast.makeText(context,newText,Toast.LENGTH_SHORT).show()
                 viewModel.searchQuery.setValue("%" + newText + "%");
                 return false
             }
@@ -136,23 +144,10 @@ class TasksFragment : Fragment() {
         }
     }
 
-    private fun showFilteringPopUpMenu() {
-        val view = activity?.findViewById<View>(R.id.menu_filter) ?: return
-        PopupMenu(requireContext(), view).run {
-            menuInflater.inflate(R.menu.filter_tasks, menu)
-
-            setOnMenuItemClickListener {
-                viewModel.setFiltering(
-                    when (it.itemId) {
-                        R.id.active -> TasksFilterType.ACTIVE_TASKS
-                        R.id.completed -> TasksFilterType.COMPLETED_TASKS
-                        else -> TasksFilterType.ALL_TASKS
-                    }
-                )
-                true
-            }
-            show()
-        }
+    private fun signOut() {
+        mGoogleSignInClient.signOut()
+        Toast.makeText(context, "Successfully logged out of ${getString(R.string.app_name)}", Toast.LENGTH_SHORT).show()
+        activity?.finish()
     }
 
     private fun setupFab() {
@@ -180,13 +175,9 @@ class TasksFragment : Fragment() {
     private fun setupListAdapter() {
         val viewModel = viewDataBinding.viewmodel
         if (viewModel != null) {
+            viewModel.accountId.value=PreferenceManager.getDefaultSharedPreferences(context).getString(getString(R.string.user_id), "admin")
             listAdapter = TasksAdapter(viewModel)
             viewDataBinding.tasksList.adapter = listAdapter
-//            viewModel.listAllTasks.observe(viewLifecycleOwner,{ list->
-//
-//                listAdapterNew =TasksAdapterNew(list, context!!)
-//                viewDataBinding.tasksList.adapter = listAdapterNew
-//            })
         } else {
             Timber.w("ViewModel not initialized when attempting to set up adapter.")
         }

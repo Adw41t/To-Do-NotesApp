@@ -35,6 +35,7 @@ data class Task @JvmOverloads constructor(
     @ColumnInfo(name = "description") var description: String = "",
     @ColumnInfo(name = "completed") var isCompleted: Boolean = false,
     @ColumnInfo(name = "pinned") var isPinned: Boolean = false,
+    @ColumnInfo(name = "accountId") var accountId: String = "admin",
     @PrimaryKey @ColumnInfo(name = "entryid") var id: String = UUID.randomUUID().toString()
 ) {
 

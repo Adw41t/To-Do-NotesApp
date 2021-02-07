@@ -72,8 +72,8 @@ class DefaultTasksRepository private constructor(application: Application) {
         updateTasksFromRemoteDataSource()
     }
 
-    fun observeTasks(): LiveData<Result<List<Task>>> {
-        return tasksLocalDataSource.observeTasks()
+    fun observeTasks(accountId:String): LiveData<Result<List<Task>>> {
+        return tasksLocalDataSource.observeTasks(accountId)
     }
 
     suspend fun refreshTask(taskId: String) {
@@ -192,7 +192,7 @@ class DefaultTasksRepository private constructor(application: Application) {
             launch { tasksLocalDataSource.unPinTask(task) }
         }
     }
-    fun searchTask(string: String) : LiveData<Result<List<Task>>>{
-      return tasksLocalDataSource.searchTasks(string)
+    fun searchTask(string: String,accountId:String) : LiveData<Result<List<Task>>>{
+      return tasksLocalDataSource.searchTasks(string,accountId)
     }
 }

@@ -53,12 +53,15 @@ class AddEditTaskViewModel(application: Application) : AndroidViewModel(applicat
     val taskUpdatedEvent: LiveData<Event<Unit>> = _taskUpdatedEvent
 
     private var taskId: String? = null
+    val taskaccountID = MutableLiveData<String>()
+//    private var taskaccountID: String = "admin"
 
     private var isNewTask: Boolean = false
 
     private var isDataLoaded = false
 
     private var taskCompleted = false
+    private var taskPinned = false
 
     fun start(taskId: String?) {
         if (_dataLoading.value == true) {
@@ -94,6 +97,8 @@ class AddEditTaskViewModel(application: Application) : AndroidViewModel(applicat
         title.value = task.title
         description.value = task.description
         taskCompleted = task.isCompleted
+        taskPinned = task.isPinned
+        taskaccountID.value = task.accountId
         _dataLoading.value = false
         isDataLoaded = true
     }
@@ -118,9 +123,9 @@ class AddEditTaskViewModel(application: Application) : AndroidViewModel(applicat
 
         val currentTaskId = taskId
         if (isNewTask || currentTaskId == null) {
-            createTask(Task(currentTitle, currentDescription))
+            createTask(Task(currentTitle, currentDescription,false,false,taskaccountID.value!!))
         } else {
-            val task = Task(currentTitle, currentDescription, taskCompleted,false, currentTaskId)
+            val task = Task(currentTitle, currentDescription, taskCompleted,taskPinned,taskaccountID.value!!, currentTaskId)
             updateTask(task)
         }
     }

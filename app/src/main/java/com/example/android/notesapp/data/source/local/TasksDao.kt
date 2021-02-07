@@ -31,8 +31,8 @@ interface TasksDao {
      *
      * @return all tasks.
      */
-    @Query("SELECT * FROM Tasks order by pinned desc")
-    fun observeTasks(): LiveData<List<Task>>
+    @Query("SELECT * FROM Tasks where accountId = :accountId order by pinned desc")
+    fun observeTasks(accountId:String): LiveData<List<Task>>
 
     /**
      * Observes a single task.
@@ -108,22 +108,6 @@ interface TasksDao {
     @Query("DELETE FROM Tasks WHERE completed = 1")
     suspend fun deleteCompletedTasks(): Int
 
-    /**
-     * Select a task by id and order by pinned.
-     *
-     * @param taskId the task id.
-     * @return the task with taskId.
-     */
-    @Query("SELECT * FROM Tasks WHERE entryid = :taskId")
-    fun getTaskByIdOrderByPinned(taskId: String): Task?
-
-    /**
-     * Select all tasks from the tasks table order by pinned.
-     *
-     * @return all tasks.
-     */
-    @Query("SELECT * FROM Tasks")
-     fun getTasksOrderByPinned(): LiveData<List<Task>>
 
     @Query("UPDATE tasks SET pinned = :pinned WHERE entryid = :taskId")
     suspend fun pinTask(taskId: String, pinned: Boolean)
@@ -132,6 +116,6 @@ interface TasksDao {
 //    fun searchTasksOrderByPinned(string: String): LiveData<List<Task>>
 
 
-    @Query("SELECT * FROM Tasks where title like :string OR description like :string order by pinned desc")
-    fun searchTasksOrderByPinned(string: String): LiveData<List<Task>>
+    @Query("SELECT * FROM Tasks where accountId = :accountId AND ( title like :string OR description like :string )order by pinned desc")
+    fun searchTasksOrderByPinned(string: String, accountId: String): LiveData<List<Task>>
 }
